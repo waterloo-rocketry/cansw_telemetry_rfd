@@ -1,0 +1,993 @@
+
+
+Microchip MPLAB XC8 Assembler V2.46 build 20240104201356 
+                                                                                               Thu Feb 20 14:07:05 2025
+
+Microchip MPLAB XC8 C Compiler v2.46 (Free license) build 20240104201356 Og1 
+     1                           	processor	18F26K83
+     2                           	fnconf	rparam,??,?,0
+     3                           	pagewidth 120
+     4                           	opt	flic
+     5                           	psect	cinit,global,reloc=2,class=CODE,delta=1
+     6                           	psect	cstackCOMRAM,global,class=COMRAM,space=1,delta=1,lowdata,noexec
+     7                           	psect	text0,global,reloc=2,class=CODE,delta=1
+     8                           	psect	text1,global,reloc=2,class=CODE,delta=1
+     9                           	psect	text2,global,reloc=2,class=CODE,delta=1
+    10                           	psect	text3,global,reloc=2,class=CODE,delta=1
+    11                           	psect	text4,global,reloc=2,class=CODE,delta=1
+    12                           	psect	smallconst,global,reloc=2,class=SMALLCONST,delta=1,noexec
+    13                           	psect	intsave_regs,global,class=BIGRAM,space=1,delta=1,noexec
+    14                           	psect	rparam,global,class=COMRAM,space=1,delta=1,noexec
+    15                           	psect	config,global,abs,ovrld,class=CONFIG,space=4,delta=1,noexec
+    16   000000                     
+    17                           ; Generated 12/10/2023 GMT
+    18                           ; 
+    19                           ; Copyright © 2023, Microchip Technology Inc. and its subsidiaries ("Microchip")
+    20                           ; All rights reserved.
+    21                           ; 
+    22                           ; This software is developed by Microchip Technology Inc. and its subsidiaries ("Microch
+      +                          ip").
+    23                           ; 
+    24                           ; Redistribution and use in source and binary forms, with or without modification, are
+    25                           ; permitted provided that the following conditions are met:
+    26                           ; 
+    27                           ;     1. Redistributions of source code must retain the above copyright notice, this lis
+      +                          t of
+    28                           ;        conditions and the following disclaimer.
+    29                           ; 
+    30                           ;     2. Redistributions in binary form must reproduce the above copyright notice, this 
+      +                          list
+    31                           ;        of conditions and the following disclaimer in the documentation and/or other
+    32                           ;        materials provided with the distribution. Publication is not required when
+    33                           ;        this file is used in an embedded application.
+    34                           ; 
+    35                           ;     3. Microchip's name may not be used to endorse or promote products derived from th
+      +                          is
+    36                           ;        software without specific prior written permission.
+    37                           ; 
+    38                           ; THIS SOFTWARE IS PROVIDED BY MICROCHIP "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES,
+    39                           ; INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS F
+      +                          OR
+    40                           ; PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL MICROCHIP BE LIABLE FOR ANY DIRECT, INDIREC
+      +                          T,
+    41                           ; INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING BUT NOT LIMITED TO
+    42                           ; PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA OR PROFITS; OR BUSINESS
+    43                           ; INTERRUPTION) HOWSOEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, ST
+      +                          RICT
+    44                           ; LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE U
+      +                          SE OF
+    45                           ; THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+    46                           ; 
+    47                           ; 
+    48                           ; Code-generator required, PIC18F26K83 Definitions
+    49                           ; 
+    50                           ; SFR Addresses
+    51   000000                     _LATAbits	set	16314
+    52   000000                     _LATA4	set	130516
+    53   000000                     _LATA3	set	130515
+    54   000000                     _ANSELAbits	set	14912
+    55   000000                     _ADPCH	set	16113
+    56   000000                     _ADCON0bits	set	16120
+    57   000000                     _TRISAbits	set	16322
+    58   000000                     _LATA2	set	130514
+    59   000000                     _TRISCbits	set	16324
+    60   000000                     _SPI1RXB	set	15632
+    61   000000                     _SPI1CON0bits	set	15636
+    62   000000                     _ADRESL	set	16111
+    63   000000                     _ADRESH	set	16112
+    64   000000                     _SPI1CON2bits	set	15638
+    65   000000                     _SPI1STATUSbits	set	15639
+    66   000000                     _SPI1BAUD	set	15641
+    67                           
+    68                           ; #config settings
+    69                           
+    70                           	psect	cinit
+    71   00115E                     __pcinit:
+    72                           	callstack 0
+    73   00115E                     start_initialization:
+    74                           	callstack 0
+    75   00115E                     __initialization:
+    76                           	callstack 0
+    77   00115E                     end_of_initialization:
+    78                           	callstack 0
+    79   00115E                     __end_of__initialization:
+    80                           	callstack 0
+    81   00115E  0100               	movlb	0
+    82   001160  EF01  F008         	goto	_main	;jump to C main() function
+    83                           
+    84                           	psect	cstackCOMRAM
+    85   000001                     __pcstackCOMRAM:
+    86                           	callstack 0
+    87   000001                     toggle_LEDs@blue:
+    88                           	callstack 0
+    89                           
+    90                           ; 1 bytes @ 0x0
+    91   000001                     	ds	1
+    92   000002                     toggle_LEDs@green:
+    93                           	callstack 0
+    94                           
+    95                           ; 1 bytes @ 0x1
+    96   000002                     	ds	1
+    97   000003                     ??_toggle_LEDs:
+    98                           
+    99                           ; 1 bytes @ 0x2
+   100   000003                     	ds	2
+   101   000005                     toggle_LEDs@red:
+   102                           	callstack 0
+   103                           
+   104                           ; 1 bytes @ 0x4
+   105   000005                     	ds	1
+   106   000006                     
+   107                           ; 1 bytes @ 0x5
+   108 ;;
+   109 ;;Main: autosize = 0, tempsize = 0, incstack = 0, save=0
+   110 ;;
+   111 ;; *************** function _main *****************
+   112 ;; Defined at:
+   113 ;;		line 39 in file "main.c"
+   114 ;; Parameters:    Size  Location     Type
+   115 ;;		None
+   116 ;; Auto vars:     Size  Location     Type
+   117 ;;		None
+   118 ;; Return value:  Size  Location     Type
+   119 ;;                  1    wreg      void 
+   120 ;; Registers used:
+   121 ;;		wreg, status,2, status,0, cstack
+   122 ;; Tracked objects:
+   123 ;;		On entry : 0/0
+   124 ;;		On exit  : 0/0
+   125 ;;		Unchanged: 0/0
+   126 ;; Data sizes:     COMRAM   BANK0   BANK1   BANK2   BANK3   BANK4   BANK5   BANK6   BANK7   BANK8   BANK9  BANK10  BANK1
+      +1  BANK12  BANK13  BANK14  BANK15
+   127 ;;      Params:         0       0       0       0       0       0       0       0       0       0       0       0       
+      +0       0       0       0       0
+   128 ;;      Locals:         0       0       0       0       0       0       0       0       0       0       0       0       
+      +0       0       0       0       0
+   129 ;;      Temps:          0       0       0       0       0       0       0       0       0       0       0       0       
+      +0       0       0       0       0
+   130 ;;      Totals:         0       0       0       0       0       0       0       0       0       0       0       0       
+      +0       0       0       0       0
+   131 ;;Total ram usage:        0 bytes
+   132 ;; Hardware stack levels required when called: 1
+   133 ;; This function calls:
+   134 ;;		_ADC_Init
+   135 ;;		_LEDs_Init
+   136 ;;		_read_ADC
+   137 ;;		_toggle_LEDs
+   138 ;; This function is called by:
+   139 ;;		Startup code after reset
+   140 ;; This function uses a non-reentrant model
+   141 ;;
+   142                           
+   143                           	psect	text0
+   144   001002                     __ptext0:
+   145                           	callstack 0
+   146   001002                     _main:
+   147                           	callstack 30
+   148   001002                     
+   149                           ;main.c: 40:     LEDs_Init();
+   150   001002  ECAB  F008         	call	_LEDs_Init	;wreg free
+   151   001006                     
+   152                           ;main.c: 41:     ADC_Init();
+   153   001006  EC91  F008         	call	_ADC_Init	;wreg free
+   154   00100A                     l843:
+   155                           
+   156                           ;main.c: 44:         read_ADC();
+   157   00100A  EC9F  F008         	call	_read_ADC	;wreg free
+   158   00100E                     
+   159                           ;main.c: 46:         toggle_LEDs(0, 0, 0);
+   160   00100E  0E00               	movlw	0
+   161   001010  6E01               	movwf	toggle_LEDs@blue^0,c
+   162   001012  0E00               	movlw	0
+   163   001014  6E02               	movwf	toggle_LEDs@green^0,c
+   164   001016  0E00               	movlw	0
+   165   001018  EC51  F008         	call	_toggle_LEDs
+   166   00101C                     
+   167                           ;main.c: 47:         toggle_LEDs(1, 0, 0);
+   168   00101C  0E00               	movlw	0
+   169   00101E  6E01               	movwf	toggle_LEDs@blue^0,c
+   170   001020  0E00               	movlw	0
+   171   001022  6E02               	movwf	toggle_LEDs@green^0,c
+   172   001024  0E01               	movlw	1
+   173   001026  EC51  F008         	call	_toggle_LEDs
+   174   00102A                     
+   175                           ;main.c: 48:         toggle_LEDs(0, 1, 0);
+   176   00102A  0E01               	movlw	1
+   177   00102C  6E01               	movwf	toggle_LEDs@blue^0,c
+   178   00102E  0E00               	movlw	0
+   179   001030  6E02               	movwf	toggle_LEDs@green^0,c
+   180   001032  0E00               	movlw	0
+   181   001034  EC51  F008         	call	_toggle_LEDs
+   182   001038                     
+   183                           ;main.c: 49:         toggle_LEDs(0, 0, 1);
+   184   001038  0E00               	movlw	0
+   185   00103A  6E01               	movwf	toggle_LEDs@blue^0,c
+   186   00103C  0E01               	movlw	1
+   187   00103E  6E02               	movwf	toggle_LEDs@green^0,c
+   188   001040  0E00               	movlw	0
+   189   001042  EC51  F008         	call	_toggle_LEDs
+   190   001046                     
+   191                           ;main.c: 50:         toggle_LEDs(1, 1, 1);
+   192   001046  0E01               	movlw	1
+   193   001048  6E01               	movwf	toggle_LEDs@blue^0,c
+   194   00104A  0E01               	movlw	1
+   195   00104C  6E02               	movwf	toggle_LEDs@green^0,c
+   196   00104E  0E01               	movlw	1
+   197   001050  EC51  F008         	call	_toggle_LEDs
+   198   001054                     
+   199                           ;main.c: 51:         toggle_LEDs(0, 0, 0);
+   200   001054  0E00               	movlw	0
+   201   001056  6E01               	movwf	toggle_LEDs@blue^0,c
+   202   001058  0E00               	movlw	0
+   203   00105A  6E02               	movwf	toggle_LEDs@green^0,c
+   204   00105C  0E00               	movlw	0
+   205   00105E  EC51  F008         	call	_toggle_LEDs
+   206   001062                     
+   207                           ;main.c: 52:         toggle_LEDs(1, 1, 1);
+   208   001062  0E01               	movlw	1
+   209   001064  6E01               	movwf	toggle_LEDs@blue^0,c
+   210   001066  0E01               	movlw	1
+   211   001068  6E02               	movwf	toggle_LEDs@green^0,c
+   212   00106A  0E01               	movlw	1
+   213   00106C  EC51  F008         	call	_toggle_LEDs
+   214   001070                     
+   215                           ;main.c: 53:         toggle_LEDs(0, 0, 0);
+   216   001070  0E00               	movlw	0
+   217   001072  6E01               	movwf	toggle_LEDs@blue^0,c
+   218   001074  0E00               	movlw	0
+   219   001076  6E02               	movwf	toggle_LEDs@green^0,c
+   220   001078  0E00               	movlw	0
+   221   00107A  EC51  F008         	call	_toggle_LEDs
+   222   00107E                     
+   223                           ;main.c: 54:         toggle_LEDs(1, 1, 1);
+   224   00107E  0E01               	movlw	1
+   225   001080  6E01               	movwf	toggle_LEDs@blue^0,c
+   226   001082  0E01               	movlw	1
+   227   001084  6E02               	movwf	toggle_LEDs@green^0,c
+   228   001086  0E01               	movlw	1
+   229   001088  EC51  F008         	call	_toggle_LEDs
+   230   00108C                     
+   231                           ;main.c: 55:         toggle_LEDs(0, 0, 0);
+   232   00108C  0E00               	movlw	0
+   233   00108E  6E01               	movwf	toggle_LEDs@blue^0,c
+   234   001090  0E00               	movlw	0
+   235   001092  6E02               	movwf	toggle_LEDs@green^0,c
+   236   001094  0E00               	movlw	0
+   237   001096  EC51  F008         	call	_toggle_LEDs
+   238   00109A  EF05  F008         	goto	l843
+   239   00109E  EFFE  F07F         	goto	start
+   240   0010A2                     __end_of_main:
+   241                           	callstack 0
+   242                           
+   243 ;; *************** function _toggle_LEDs *****************
+   244 ;; Defined at:
+   245 ;;		line 23 in file "main.c"
+   246 ;; Parameters:    Size  Location     Type
+   247 ;;  red             1    wreg     _Bool 
+   248 ;;  blue            1    0[COMRAM] _Bool 
+   249 ;;  green           1    1[COMRAM] _Bool 
+   250 ;; Auto vars:     Size  Location     Type
+   251 ;;  red             1    4[COMRAM] _Bool 
+   252 ;; Return value:  Size  Location     Type
+   253 ;;                  1    wreg      void 
+   254 ;; Registers used:
+   255 ;;		wreg, status,2, status,0
+   256 ;; Tracked objects:
+   257 ;;		On entry : 0/0
+   258 ;;		On exit  : 0/0
+   259 ;;		Unchanged: 0/0
+   260 ;; Data sizes:     COMRAM   BANK0   BANK1   BANK2   BANK3   BANK4   BANK5   BANK6   BANK7   BANK8   BANK9  BANK10  BANK1
+      +1  BANK12  BANK13  BANK14  BANK15
+   261 ;;      Params:         2       0       0       0       0       0       0       0       0       0       0       0       
+      +0       0       0       0       0
+   262 ;;      Locals:         1       0       0       0       0       0       0       0       0       0       0       0       
+      +0       0       0       0       0
+   263 ;;      Temps:          2       0       0       0       0       0       0       0       0       0       0       0       
+      +0       0       0       0       0
+   264 ;;      Totals:         5       0       0       0       0       0       0       0       0       0       0       0       
+      +0       0       0       0       0
+   265 ;;Total ram usage:        5 bytes
+   266 ;; Hardware stack levels used: 1
+   267 ;; This function calls:
+   268 ;;		Nothing
+   269 ;; This function is called by:
+   270 ;;		_main
+   271 ;; This function uses a non-reentrant model
+   272 ;;
+   273                           
+   274                           	psect	text1
+   275   0010A2                     __ptext1:
+   276                           	callstack 0
+   277   0010A2                     _toggle_LEDs:
+   278                           	callstack 30
+   279                           
+   280                           ;incstack = 0
+   281                           ;toggle_LEDs@red stored from wreg
+   282   0010A2  6E05               	movwf	toggle_LEDs@red^0,c
+   283   0010A4                     
+   284                           ;main.c: 24:     LATA2 = 1;
+   285   0010A4  84BA               	bsf	16314,2,c	;volatile
+   286                           
+   287                           ;main.c: 25:     LATA3 = 1;
+   288   0010A6  86BA               	bsf	16314,3,c	;volatile
+   289                           
+   290                           ;main.c: 26:     LATA4 = 1;
+   291   0010A8  88BA               	bsf	16314,4,c	;volatile
+   292   0010AA                     
+   293                           ;main.c: 28:     red = ~red;
+   294   0010AA  0405               	decf	toggle_LEDs@red^0,w,c
+   295   0010AC  A4D8               	btfss	status,2,c
+   296   0010AE  EF5B  F008         	goto	u121
+   297   0010B2  EF5E  F008         	goto	u120
+   298   0010B6                     u121:
+   299   0010B6  0E01               	movlw	1
+   300   0010B8  EF5F  F008         	goto	u130
+   301   0010BC                     u120:
+   302   0010BC  0E00               	movlw	0
+   303   0010BE                     u130:
+   304   0010BE  6E05               	movwf	toggle_LEDs@red^0,c
+   305   0010C0                     
+   306                           ;main.c: 29:     blue = ~blue;
+   307   0010C0  0401               	decf	toggle_LEDs@blue^0,w,c
+   308   0010C2  A4D8               	btfss	status,2,c
+   309   0010C4  EF66  F008         	goto	u141
+   310   0010C8  EF69  F008         	goto	u140
+   311   0010CC                     u141:
+   312   0010CC  0E01               	movlw	1
+   313   0010CE  EF6A  F008         	goto	u150
+   314   0010D2                     u140:
+   315   0010D2  0E00               	movlw	0
+   316   0010D4                     u150:
+   317   0010D4  6E01               	movwf	toggle_LEDs@blue^0,c
+   318   0010D6                     
+   319                           ;main.c: 30:     green = ~green;
+   320   0010D6  0402               	decf	toggle_LEDs@green^0,w,c
+   321   0010D8  A4D8               	btfss	status,2,c
+   322   0010DA  EF71  F008         	goto	u161
+   323   0010DE  EF74  F008         	goto	u160
+   324   0010E2                     u161:
+   325   0010E2  0E01               	movlw	1
+   326   0010E4  EF75  F008         	goto	u170
+   327   0010E8                     u160:
+   328   0010E8  0E00               	movlw	0
+   329   0010EA                     u170:
+   330   0010EA  6E02               	movwf	toggle_LEDs@green^0,c
+   331   0010EC                     
+   332                           ;main.c: 32:     LATA2 = red;
+   333   0010EC  B005               	btfsc	toggle_LEDs@red^0,0,c
+   334   0010EE  D002               	bra	u185
+   335   0010F0  94BA               	bcf	16314,2,c	;volatile
+   336   0010F2  D001               	bra	u186
+   337   0010F4                     u185:
+   338   0010F4  84BA               	bsf	16314,2,c	;volatile
+   339   0010F6                     u186:
+   340   0010F6                     
+   341                           ;main.c: 33:     LATA3 = blue;
+   342   0010F6  B001               	btfsc	toggle_LEDs@blue^0,0,c
+   343   0010F8  D002               	bra	u195
+   344   0010FA  96BA               	bcf	16314,3,c	;volatile
+   345   0010FC  D001               	bra	u196
+   346   0010FE                     u195:
+   347   0010FE  86BA               	bsf	16314,3,c	;volatile
+   348   001100                     u196:
+   349   001100                     
+   350                           ;main.c: 34:     LATA4 = green;
+   351   001100  B002               	btfsc	toggle_LEDs@green^0,0,c
+   352   001102  D002               	bra	u205
+   353   001104  98BA               	bcf	16314,4,c	;volatile
+   354   001106  D001               	bra	u206
+   355   001108                     u205:
+   356   001108  88BA               	bsf	16314,4,c	;volatile
+   357   00110A                     u206:
+   358   00110A                     
+   359                           ;main.c: 36:     _delay((unsigned long)((500)*(12000000/4000.0)));
+   360   00110A  0E08               	movlw	8
+   361   00110C  6E04               	movwf	(??_toggle_LEDs+1)^0,c
+   362   00110E  0E9D               	movlw	157
+   363   001110  6E03               	movwf	??_toggle_LEDs^0,c
+   364   001112  0E06               	movlw	6
+   365   001114                     u217:
+   366   001114  2EE8               	decfsz	wreg,f,c
+   367   001116  D7FE               	bra	u217
+   368   001118  2E03               	decfsz	??_toggle_LEDs^0,f,c
+   369   00111A  D7FC               	bra	u217
+   370   00111C  2E04               	decfsz	(??_toggle_LEDs+1)^0,f,c
+   371   00111E  D7FA               	bra	u217
+   372   001120  0012               	return		;funcret
+   373   001122                     __end_of_toggle_LEDs:
+   374                           	callstack 0
+   375                           
+   376 ;; *************** function _read_ADC *****************
+   377 ;; Defined at:
+   378 ;;		line 21 in file "adc.c"
+   379 ;; Parameters:    Size  Location     Type
+   380 ;;		None
+   381 ;; Auto vars:     Size  Location     Type
+   382 ;;  result          2    0        unsigned short 
+   383 ;; Return value:  Size  Location     Type
+   384 ;;                  2   14[None  ] unsigned short 
+   385 ;; Registers used:
+   386 ;;		wreg
+   387 ;; Tracked objects:
+   388 ;;		On entry : 0/0
+   389 ;;		On exit  : 0/0
+   390 ;;		Unchanged: 0/0
+   391 ;; Data sizes:     COMRAM   BANK0   BANK1   BANK2   BANK3   BANK4   BANK5   BANK6   BANK7   BANK8   BANK9  BANK10  BANK1
+      +1  BANK12  BANK13  BANK14  BANK15
+   392 ;;      Params:         0       0       0       0       0       0       0       0       0       0       0       0       
+      +0       0       0       0       0
+   393 ;;      Locals:         0       0       0       0       0       0       0       0       0       0       0       0       
+      +0       0       0       0       0
+   394 ;;      Temps:          0       0       0       0       0       0       0       0       0       0       0       0       
+      +0       0       0       0       0
+   395 ;;      Totals:         0       0       0       0       0       0       0       0       0       0       0       0       
+      +0       0       0       0       0
+   396 ;;Total ram usage:        0 bytes
+   397 ;; Hardware stack levels used: 1
+   398 ;; This function calls:
+   399 ;;		Nothing
+   400 ;; This function is called by:
+   401 ;;		_main
+   402 ;; This function uses a non-reentrant model
+   403 ;;
+   404                           
+   405                           	psect	text2
+   406   00113E                     __ptext2:
+   407                           	callstack 0
+   408   00113E                     _read_ADC:
+   409                           	callstack 30
+   410   00113E                     
+   411                           ;adc.c: 22:     ADCON0bits.GO = 1;
+   412   00113E  013E               	movlb	62	; () banked
+   413   001140  81F8               	bsf	248,0,b	;volatile
+   414   001142                     l46:
+   415                           
+   416                           ; BSR set to: 62
+   417   001142  B1F8               	btfsc	248,0,b	;volatile
+   418   001144  EFA6  F008         	goto	u101
+   419   001148  EFA8  F008         	goto	u100
+   420   00114C                     u101:
+   421   00114C  EFA1  F008         	goto	l46
+   422   001150                     u100:
+   423   001150                     
+   424                           ; BSR set to: 62
+   425   001150  51F0               	movf	240,w,b	;volatile
+   426   001152  51EF               	movf	239,w,b	;volatile
+   427   001154                     
+   428                           ; BSR set to: 62
+   429   001154  0012               	return		;funcret
+   430   001156                     __end_of_read_ADC:
+   431                           	callstack 0
+   432                           
+   433 ;; *************** function _LEDs_Init *****************
+   434 ;; Defined at:
+   435 ;;		line 16 in file "main.c"
+   436 ;; Parameters:    Size  Location     Type
+   437 ;;		None
+   438 ;; Auto vars:     Size  Location     Type
+   439 ;;		None
+   440 ;; Return value:  Size  Location     Type
+   441 ;;                  1    wreg      void 
+   442 ;; Registers used:
+   443 ;;		None
+   444 ;; Tracked objects:
+   445 ;;		On entry : 0/0
+   446 ;;		On exit  : 0/0
+   447 ;;		Unchanged: 0/0
+   448 ;; Data sizes:     COMRAM   BANK0   BANK1   BANK2   BANK3   BANK4   BANK5   BANK6   BANK7   BANK8   BANK9  BANK10  BANK1
+      +1  BANK12  BANK13  BANK14  BANK15
+   449 ;;      Params:         0       0       0       0       0       0       0       0       0       0       0       0       
+      +0       0       0       0       0
+   450 ;;      Locals:         0       0       0       0       0       0       0       0       0       0       0       0       
+      +0       0       0       0       0
+   451 ;;      Temps:          0       0       0       0       0       0       0       0       0       0       0       0       
+      +0       0       0       0       0
+   452 ;;      Totals:         0       0       0       0       0       0       0       0       0       0       0       0       
+      +0       0       0       0       0
+   453 ;;Total ram usage:        0 bytes
+   454 ;; Hardware stack levels used: 1
+   455 ;; This function calls:
+   456 ;;		Nothing
+   457 ;; This function is called by:
+   458 ;;		_main
+   459 ;; This function uses a non-reentrant model
+   460 ;;
+   461                           
+   462                           	psect	text3
+   463   001156                     __ptext3:
+   464                           	callstack 0
+   465   001156                     _LEDs_Init:
+   466                           	callstack 30
+   467   001156                     
+   468                           ;main.c: 18:     TRISAbits.TRISA2 = 0;
+   469   001156  94C2               	bcf	194,2,c	;volatile
+   470                           
+   471                           ;main.c: 19:     TRISAbits.TRISA3 = 0;
+   472   001158  96C2               	bcf	194,3,c	;volatile
+   473                           
+   474                           ;main.c: 20:     TRISAbits.TRISA4 = 0;
+   475   00115A  98C2               	bcf	194,4,c	;volatile
+   476   00115C  0012               	return		;funcret
+   477   00115E                     __end_of_LEDs_Init:
+   478                           	callstack 0
+   479                           
+   480 ;; *************** function _ADC_Init *****************
+   481 ;; Defined at:
+   482 ;;		line 12 in file "adc.c"
+   483 ;; Parameters:    Size  Location     Type
+   484 ;;		None
+   485 ;; Auto vars:     Size  Location     Type
+   486 ;;		None
+   487 ;; Return value:  Size  Location     Type
+   488 ;;                  1    wreg      void 
+   489 ;; Registers used:
+   490 ;;		wreg, status,2
+   491 ;; Tracked objects:
+   492 ;;		On entry : 0/0
+   493 ;;		On exit  : 0/0
+   494 ;;		Unchanged: 0/0
+   495 ;; Data sizes:     COMRAM   BANK0   BANK1   BANK2   BANK3   BANK4   BANK5   BANK6   BANK7   BANK8   BANK9  BANK10  BANK1
+      +1  BANK12  BANK13  BANK14  BANK15
+   496 ;;      Params:         0       0       0       0       0       0       0       0       0       0       0       0       
+      +0       0       0       0       0
+   497 ;;      Locals:         0       0       0       0       0       0       0       0       0       0       0       0       
+      +0       0       0       0       0
+   498 ;;      Temps:          0       0       0       0       0       0       0       0       0       0       0       0       
+      +0       0       0       0       0
+   499 ;;      Totals:         0       0       0       0       0       0       0       0       0       0       0       0       
+      +0       0       0       0       0
+   500 ;;Total ram usage:        0 bytes
+   501 ;; Hardware stack levels used: 1
+   502 ;; This function calls:
+   503 ;;		Nothing
+   504 ;; This function is called by:
+   505 ;;		_main
+   506 ;; This function uses a non-reentrant model
+   507 ;;
+   508                           
+   509                           	psect	text4
+   510   001122                     __ptext4:
+   511                           	callstack 0
+   512   001122                     _ADC_Init:
+   513                           	callstack 30
+   514   001122                     
+   515                           ;adc.c: 13:     ADCON0bits.FM = 1;
+   516   001122  013E               	movlb	62	; () banked
+   517   001124  51F8               	movf	248,w,b	;volatile
+   518   001126  0BF3               	andlw	-13
+   519   001128  0904               	iorlw	4
+   520   00112A  6FF8               	movwf	248,b	;volatile
+   521   00112C                     
+   522                           ; BSR set to: 62
+   523                           ;adc.c: 14:     ADCON0bits.CS = 1;
+   524   00112C  89F8               	bsf	248,4,b	;volatile
+   525                           
+   526                           ;adc.c: 15:     ADPCH = 0x00;
+   527   00112E  0E00               	movlw	0
+   528   001130  6FF1               	movwf	241,b	;volatile
+   529   001132                     
+   530                           ; BSR set to: 62
+   531                           ;adc.c: 16:     TRISAbits.TRISA0 = 1;
+   532   001132  80C2               	bsf	194,0,c	;volatile
+   533   001134                     
+   534                           ; BSR set to: 62
+   535                           ;adc.c: 17:     ANSELAbits.ANSELA0 = 1;
+   536   001134  013A               	movlb	58	; () banked
+   537   001136  8140               	bsf	64,0,b	;volatile
+   538   001138                     
+   539                           ; BSR set to: 58
+   540                           ;adc.c: 18:     ADCON0bits.ON = 1;
+   541   001138  013E               	movlb	62	; () banked
+   542   00113A  8FF8               	bsf	248,7,b	;volatile
+   543   00113C                     
+   544                           ; BSR set to: 62
+   545   00113C  0012               	return		;funcret
+   546   00113E                     __end_of_ADC_Init:
+   547                           	callstack 0
+   548                           
+   549                           	psect	smallconst
+   550   001000                     __psmallconst:
+   551                           	callstack 0
+   552   001000  00                 	db	0
+   553   001001  00                 	db	0	; dummy byte at the end
+   554   000000                     
+   555                           	psect	rparam
+   556   000000                     
+   557                           	psect	config
+   558                           
+   559                           ;Config register CONFIG1L @ 0x300000
+   560                           ;	External Oscillator Selection
+   561                           ;	FEXTOSC = HS, HS (crystal oscillator) above 8 MHz; PFM set to high power
+   562                           ;	Reset Oscillator Selection
+   563                           ;	RSTOSC = EXTOSC, EXTOSC operating per FEXTOSC bits (device manufacturing default)
+   564   300000                     	org	3145728
+   565   300000  FA                 	db	250
+   566                           
+   567                           ;Config register CONFIG1H @ 0x300001
+   568                           ;	Clock out Enable bit
+   569                           ;	CLKOUTEN = OFF, CLKOUT function is disabled
+   570                           ;	PRLOCKED One-Way Set Enable bit
+   571                           ;	PR1WAY = ON, PRLOCK bit can be cleared and set only once
+   572                           ;	Clock Switch Enable bit
+   573                           ;	CSWEN = ON, Writing to NOSC and NDIV is allowed
+   574                           ;	Fail-Safe Clock Monitor Enable bit
+   575                           ;	FCMEN = ON, Fail-Safe Clock Monitor enabled
+   576   300001                     	org	3145729
+   577   300001  FF                 	db	255
+   578                           
+   579                           ;Config register CONFIG2L @ 0x300002
+   580                           ;	MCLR Enable bit
+   581                           ;	MCLRE = EXTMCLR, If LVP = 0, MCLR pin is MCLR; If LVP = 1, RE3 pin function is MCLR
+   582                           ;	Power-up timer selection bits
+   583                           ;	PWRTS = PWRT_OFF, PWRT is disabled
+   584                           ;	Multi-vector enable bit
+   585                           ;	MVECEN = ON, Multi-vector enabled, Vector table used for interrupts
+   586                           ;	IVTLOCK bit One-way set enable bit
+   587                           ;	IVT1WAY = ON, IVTLOCK bit can be cleared and set only once
+   588                           ;	Low Power BOR Enable bit
+   589                           ;	LPBOREN = OFF, ULPBOR disabled
+   590                           ;	Brown-out Reset Enable bits
+   591                           ;	BOREN = SBORDIS, Brown-out Reset enabled , SBOREN bit is ignored
+   592   300002                     	org	3145730
+   593   300002  FF                 	db	255
+   594                           
+   595                           ;Config register CONFIG2H @ 0x300003
+   596                           ;	Brown-out Reset Voltage Selection bits
+   597                           ;	BORV = VBOR_2P45, Brown-out Reset Voltage (VBOR) set to 2.45V
+   598                           ;	ZCD Disable bit
+   599                           ;	ZCD = OFF, ZCD disabled. ZCD can be enabled by setting the ZCDSEN bit of ZCDCON
+   600                           ;	PPSLOCK bit One-Way Set Enable bit
+   601                           ;	PPS1WAY = ON, PPSLOCK bit can be cleared and set only once; PPS registers remain locke
+      +                          d after one clear/set cycle
+   602                           ;	Stack Full/Underflow Reset Enable bit
+   603                           ;	STVREN = ON, Stack full/underflow will cause Reset
+   604                           ;	Debugger Enable bit
+   605                           ;	DEBUG = OFF, Background debugger disabled
+   606                           ;	Extended Instruction Set Enable bit
+   607                           ;	XINST = OFF, Extended Instruction Set and Indexed Addressing Mode disabled
+   608   300003                     	org	3145731
+   609   300003  FF                 	db	255
+   610                           
+   611                           ;Config register CONFIG3L @ 0x300004
+   612                           ;	WDT Period selection bits
+   613                           ;	WDTCPS = WDTCPS_31, Divider ratio 1:65536; software control of WDTPS
+   614                           ;	WDT operating mode
+   615                           ;	WDTE = ON, WDT enabled regardless of sleep
+   616   300004                     	org	3145732
+   617   300004  FF                 	db	255
+   618                           
+   619                           ;Config register CONFIG3H @ 0x300005
+   620                           ;	WDT Window Select bits
+   621                           ;	WDTCWS = WDTCWS_7, window always open (100%); software control; keyed access not requi
+      +                          red
+   622                           ;	WDT input clock selector
+   623                           ;	WDTCCS = SC, Software Control
+   624   300005                     	org	3145733
+   625   300005  FF                 	db	255
+   626                           
+   627                           ;Config register CONFIG4L @ 0x300006
+   628                           ;	Boot Block Size selection bits
+   629                           ;	BBSIZE = BBSIZE_512, Boot Block size is 512 words
+   630                           ;	Boot Block enable bit
+   631                           ;	BBEN = OFF, Boot block disabled
+   632                           ;	Storage Area Flash enable bit
+   633                           ;	SAFEN = OFF, SAF disabled
+   634                           ;	Application Block write protection bit
+   635                           ;	WRTAPP = OFF, Application Block not write protected
+   636   300006                     	org	3145734
+   637   300006  FF                 	db	255
+   638                           
+   639                           ;Config register CONFIG4H @ 0x300007
+   640                           ;	Boot Block Write Protection bit
+   641                           ;	WRTB = OFF, Boot Block not write-protected
+   642                           ;	Configuration Register Write Protection bit
+   643                           ;	WRTC = OFF, Configuration registers (300000-30000Bh) not write-protected
+   644                           ;	Data EEPROM Write Protection bit
+   645                           ;	WRTD = OFF, Data EEPROM not write-protected
+   646                           ;	SAF Write protection bit
+   647                           ;	WRTSAF = OFF, SAF not Write Protected
+   648                           ;	Low Voltage Programming Enable bit
+   649                           ;	LVP = ON, Low voltage programming enabled. MCLR/VPP pin function is MCLR. MCLRE config
+      +                          uration bit is ignored
+   650   300007                     	org	3145735
+   651   300007  FF                 	db	255
+   652                           
+   653                           ;Config register CONFIG5L @ 0x300008
+   654                           ;	PFM and Data EEPROM Code Protection bit
+   655                           ;	CP = OFF, PFM and Data EEPROM code protection disabled
+   656   300008                     	org	3145736
+   657   300008  FF                 	db	255
+   658                           
+   659                           ;Config register CONFIG5H @ 0x300009
+   660                           ;	unspecified, using default values
+   661   300009                     	org	3145737
+   662   300009  FF                 	db	255
+   663                           tosu	equ	0x3FFF
+   664                           tosh	equ	0x3FFE
+   665                           tosl	equ	0x3FFD
+   666                           stkptr	equ	0x3FFC
+   667                           pclatu	equ	0x3FFB
+   668                           pclath	equ	0x3FFA
+   669                           pcl	equ	0x3FF9
+   670                           tblptru	equ	0x3FF8
+   671                           tblptrh	equ	0x3FF7
+   672                           tblptrl	equ	0x3FF6
+   673                           tablat	equ	0x3FF5
+   674                           prodh	equ	0x3FF4
+   675                           prodl	equ	0x3FF3
+   676                           indf0	equ	0x3FEF
+   677                           postinc0	equ	0x3FEE
+   678                           postdec0	equ	0x3FED
+   679                           preinc0	equ	0x3FEC
+   680                           plusw0	equ	0x3FEB
+   681                           fsr0h	equ	0x3FEA
+   682                           fsr0l	equ	0x3FE9
+   683                           wreg	equ	0x3FE8
+   684                           indf1	equ	0x3FE7
+   685                           postinc1	equ	0x3FE6
+   686                           postdec1	equ	0x3FE5
+   687                           preinc1	equ	0x3FE4
+   688                           plusw1	equ	0x3FE3
+   689                           fsr1h	equ	0x3FE2
+   690                           fsr1l	equ	0x3FE1
+   691                           bsr	equ	0x3FE0
+   692                           indf2	equ	0x3FDF
+   693                           postinc2	equ	0x3FDE
+   694                           postdec2	equ	0x3FDD
+   695                           preinc2	equ	0x3FDC
+   696                           plusw2	equ	0x3FDB
+   697                           fsr2h	equ	0x3FDA
+   698                           fsr2l	equ	0x3FD9
+   699                           status	equ	0x3FD8
+
+Data Sizes:
+    Strings     0
+    Constant    0
+    Data        0
+    BSS         0
+    Persistent  0
+    Stack       0
+
+Auto Spaces:
+    Space          Size  Autos    Used
+    COMRAM           95      5       5
+    BANK0           160      0       0
+    BANK1           256      0       0
+    BANK2           256      0       0
+    BANK3           256      0       0
+    BANK4           256      0       0
+    BANK5           256      0       0
+    BANK6           256      0       0
+    BANK7           256      0       0
+    BANK8           256      0       0
+    BANK9           256      0       0
+    BANK10          256      0       0
+    BANK11          256      0       0
+    BANK12          256      0       0
+    BANK13          256      0       0
+    BANK14          256      0       0
+    BANK15          256      0       0
+
+Pointer List with Targets:
+
+    None.
+
+Critical Paths under _main in COMRAM
+
+    _main->_toggle_LEDs
+
+Critical Paths under _main in BANK0
+
+    None.
+
+Critical Paths under _main in BANK1
+
+    None.
+
+Critical Paths under _main in BANK2
+
+    None.
+
+Critical Paths under _main in BANK3
+
+    None.
+
+Critical Paths under _main in BANK4
+
+    None.
+
+Critical Paths under _main in BANK5
+
+    None.
+
+Critical Paths under _main in BANK6
+
+    None.
+
+Critical Paths under _main in BANK7
+
+    None.
+
+Critical Paths under _main in BANK8
+
+    None.
+
+Critical Paths under _main in BANK9
+
+    None.
+
+Critical Paths under _main in BANK10
+
+    None.
+
+Critical Paths under _main in BANK11
+
+    None.
+
+Critical Paths under _main in BANK12
+
+    None.
+
+Critical Paths under _main in BANK13
+
+    None.
+
+Critical Paths under _main in BANK14
+
+    None.
+
+Critical Paths under _main in BANK15
+
+    None.
+
+Call Graph Tables:
+
+ ---------------------------------------------------------------------------------
+ (Depth) Function   	        Calls       Base Space   Used Autos Params    Refs
+ ---------------------------------------------------------------------------------
+ (0) _main                                                 0     0      0    1660
+                           _ADC_Init
+                          _LEDs_Init
+                           _read_ADC
+                        _toggle_LEDs
+ ---------------------------------------------------------------------------------
+ (1) _toggle_LEDs                                          5     3      2    1655
+                                              0 COMRAM     5     3      2
+ ---------------------------------------------------------------------------------
+ (1) _read_ADC                                             2     2      0       5
+ ---------------------------------------------------------------------------------
+ (1) _LEDs_Init                                            0     0      0       0
+ ---------------------------------------------------------------------------------
+ (1) _ADC_Init                                             0     0      0       0
+ ---------------------------------------------------------------------------------
+ Estimated maximum stack depth 1
+ ---------------------------------------------------------------------------------
+
+ Call Graph Graphs:
+
+ _main (ROOT)
+   _ADC_Init
+   _LEDs_Init
+   _read_ADC
+   _toggle_LEDs
+
+ Address spaces:
+Name               Size   Autos  Total    Cost      Usage
+BITCOMRAM           5F      0       0       0        0.0%
+EEDATA             400      0       0       0        0.0%
+NULL                 0      0       0       0        0.0%
+CODE                 0      0       0       0        0.0%
+COMRAM              5F      5       5       1        5.3%
+STACK                0      0       0       2        0.0%
+DATA                 0      0       0       3        0.0%
+BITBANK0            A0      0       0       4        0.0%
+BANK0               A0      0       0       5        0.0%
+BITBANK1           100      0       0       6        0.0%
+BANK1              100      0       0       7        0.0%
+BITBANK2           100      0       0       8        0.0%
+BANK2              100      0       0       9        0.0%
+BITBANK3           100      0       0      10        0.0%
+BANK3              100      0       0      11        0.0%
+BITBANK4           100      0       0      12        0.0%
+BANK4              100      0       0      13        0.0%
+BITBANK5           100      0       0      14        0.0%
+BANK5              100      0       0      15        0.0%
+BITBANK6           100      0       0      16        0.0%
+BANK6              100      0       0      17        0.0%
+BITBANK7           100      0       0      18        0.0%
+BANK7              100      0       0      19        0.0%
+BITBANK8           100      0       0      20        0.0%
+BANK8              100      0       0      21        0.0%
+BITBANK9           100      0       0      22        0.0%
+BANK9              100      0       0      23        0.0%
+BITBANK10          100      0       0      24        0.0%
+BANK10             100      0       0      25        0.0%
+BITBANK11          100      0       0      26        0.0%
+BANK11             100      0       0      27        0.0%
+BITBANK12          100      0       0      28        0.0%
+BANK12             100      0       0      29        0.0%
+BITBANK13          100      0       0      30        0.0%
+BANK13             100      0       0      31        0.0%
+BITBANK14          100      0       0      32        0.0%
+BANK14             100      0       0      33        0.0%
+BITBANK15          100      0       0      34        0.0%
+BANK15             100      0       0      35        0.0%
+BITBIGSFRhh         3B      0       0      36        0.0%
+BITBIGSFRhl          1      0       0      37        0.0%
+BITBIGSFRlh          7      0       0      38        0.0%
+BITBIGSFRllh        C1      0       0      39        0.0%
+BITBIGSFRlllh        6      0       0      40        0.0%
+BITBIGSFRllllhh    1D5      0       0      41        0.0%
+BITBIGSFRllllhh      1      0       0      42        0.0%
+BITBIGSFRllllhh      1      0       0      43        0.0%
+BITBIGSFRllllhl      3      0       0      44        0.0%
+BITBIGSFRllllhl    2CF      0       0      45        0.0%
+BITBIGSFRlllll     340      0       0      46        0.0%
+ABS                  0      0       0      47        0.0%
+BIGRAM             FFF      0       0      48        0.0%
+BIGSFR               0      0       0     200        0.0%
+BITSFR_9             0      0       0     200        0.0%
+SFR_9                0      0       0     200        0.0%
+BITSFR_8             0      0       0     200        0.0%
+SFR_8                0      0       0     200        0.0%
+BITSFR_7             0      0       0     200        0.0%
+SFR_7                0      0       0     200        0.0%
+BITSFR_6             0      0       0     200        0.0%
+SFR_6                0      0       0     200        0.0%
+BITSFR_5             0      0       0     200        0.0%
+SFR_5                0      0       0     200        0.0%
+BITSFR_4             0      0       0     200        0.0%
+SFR_4                0      0       0     200        0.0%
+BITSFR_3             0      0       0     200        0.0%
+SFR_3                0      0       0     200        0.0%
+BITSFR_2             0      0       0     200        0.0%
+SFR_2                0      0       0     200        0.0%
+BITSFR_1             0      0       0     200        0.0%
+SFR_1                0      0       0     200        0.0%
+BITSFR               0      0       0     200        0.0%
+SFR                  0      0       0     200        0.0%
+
+
+Microchip Technology PIC18 Macro Assembler V2.46 build 20240104201356 
+Symbol Table                                                                                   Thu Feb 20 14:07:05 2025
+
+                     l20 1120                       l17 115C                       l43 113C  
+                     l46 1142                       l49 1154                      l751 1156  
+                    l831 10EC                      l823 10A4                      l833 10F6  
+                    l825 10AA                      l841 1006                      l771 112C  
+                    l835 1100                      l827 10C0                      l851 1038  
+                    l843 100A                      l773 1132                      l781 1150  
+                    l837 110A                      l829 10D6                      l861 107E  
+                    l853 1046                      l845 100E                      l775 1134  
+                    l863 108C                      l855 1054                      l847 101C  
+                    l839 1002                      l777 1138                      l769 1122  
+                    l857 1062                      l849 102A                      l779 113E  
+                    l859 1070                      u100 1150                      u101 114C  
+                    u120 10BC                      u121 10B6                      u130 10BE  
+                    u140 10D2                      u205 1108                      u141 10CC  
+                    u206 110A                      u150 10D4                      u160 10E8  
+                    u217 1114                      u161 10E2                      u170 10EA  
+                    u185 10F4                      u186 10F6                      u195 10FE  
+                    u196 1100                      wreg 3FE8                     _main 1002  
+       __end_of_ADC_Init 113E                     start FFFC           _SPI1STATUSbits 3D17  
+           ___param_bank 0000                    ?_main 0001                    _ADPCH 3EF1  
+                  _LATA2 1FDD2                    _LATA3 1FDD3                    _LATA4 1FDD4  
+                  status 3FD8          __initialization 115E             __end_of_main 10A2  
+                 ??_main 0006            __activetblptr 0000                   _ADRESH 3EF0  
+                 _ADRESL 3EEF        __end_of_LEDs_Init 115E         __end_of_read_ADC 1156  
+                 isa$std 0001                ?_ADC_Init 0001             __mediumconst 0000  
+             __accesstop 0060  __end_of__initialization 115E             ?_toggle_LEDs 0001  
+          ___rparam_used 0001           __pcstackCOMRAM 0001         toggle_LEDs@green 0002  
+             ??_ADC_Init 0001           toggle_LEDs@red 0005                  _SPI1RXB 3D10  
+              ?_read_ADC 0001                  __Hparam 0000                  __Lparam 0000  
+           __psmallconst 1000                  __pcinit 115E                  __ramtop 1000  
+                __ptext0 1002                  __ptext1 10A2                  __ptext2 113E  
+                __ptext3 1156                  __ptext4 1122     end_of_initialization 115E  
+             ??_read_ADC 0001                _LEDs_Init 1156                _TRISAbits 3FC2  
+              _TRISCbits 3FC4               ?_LEDs_Init 0001      start_initialization 115E  
+        toggle_LEDs@blue 0001              ??_LEDs_Init 0001              __smallconst 1000  
+               _ADC_Init 1122                 _LATAbits 3FBA             _SPI1CON0bits 3D14  
+           _SPI1CON2bits 3D16                 _SPI1BAUD 3D19               _ADCON0bits 3EF8  
+          ??_toggle_LEDs 0003                 __Hrparam 0000                 __Lrparam 0000  
+             _ANSELAbits 3A40                 _read_ADC 113E      __end_of_toggle_LEDs 1122  
+               isa$xinst 0000              _toggle_LEDs 10A2  
