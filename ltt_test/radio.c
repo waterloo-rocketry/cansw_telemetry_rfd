@@ -124,7 +124,7 @@ void radio_handle_input_character(char c) {
 
             if(++parse_i == 2) { // crc8 has 2 hex digits
                 if(exp_crc == msg_crc) {
-                    if (get_message_type(&msg) == MSG_RESET_CMD && get_reset_board_id(&msg) == 0) {
+                    if(check_board_need_reset(&msg)){
                         RESET();
                     }
                     txb_enqueue(&msg);

@@ -1,6 +1,7 @@
 #include <xc.h>
 #include "canlib.h"
 
+#include "timer.h"
 #include "device_config.h"
 #include "platform.h"
 #include "radio.h"
@@ -79,10 +80,10 @@ int main(void) {
             can_msg_t msg;
 
             uint16_t radio_curr = read_radio_curr_low_pass_ma();
-            build_analog_data_msg(millis(), SENSOR_RADIO_CURR, radio_curr, &msg);
+            build_analog_data_msg(PRIO_MEDIUM, millis(), SENSOR_MOTOR_CURR, radio_curr, &msg);
             txb_enqueue(&msg);
 
-            build_board_stat_msg(millis(), E_NOMINAL, NULL, 0, &msg);
+            build_general_board_status_msg(PRIO_MEDIUM, millis(), 0, 0, &msg);
             txb_enqueue(&msg);
         }
 
@@ -112,7 +113,10 @@ static void can_msg_handler(const can_msg_t *msg) {
     rcvb_push_message(msg);
 
     // ignore messages that were sent from this board
-    if (get_board_unique_id(msg) == BOARD_UNIQUE_ID) {
+    if (get_board_type_unique_id(msg) == BOARD_TYPE_UNIQUE_ID) {
+        return;
+    }
+	if (get_board_inst_unique_id(msg) == BOARD_INST_UNIQUE_ID) {
         return;
     }
 
@@ -120,11 +124,11 @@ static void can_msg_handler(const can_msg_t *msg) {
 
     switch (msg_type) {
         case MSG_ACTUATOR_CMD:
-            if (get_actuator_id(msg) == ACTUATOR_RADIO) {
-                if (get_req_actuator_state(msg) == ACTUATOR_OFF) {
+            if (get_actuator_id(msg) == ACTUATOR_TELEMETRY) {
+                if (get_cmd_actuator_state(msg) == ACT_STATE_OFF) {
                     SET_RADIO_POWER(false);
                 }
-                else if (get_req_actuator_state(msg) == ACTUATOR_ON) {
+                else if (get_cmd_actuator_state(msg) == ACT_STATE_ON) {
                     SET_RADIO_POWER(true);
                 }
             }
@@ -143,8 +147,7 @@ static void can_msg_handler(const can_msg_t *msg) {
             break;
 
         case MSG_RESET_CMD:
-            dest_id = get_reset_board_id(msg);
-            if (dest_id == BOARD_UNIQUE_ID || dest_id == 0) {
+            if(check_board_need_reset(msg)){
                 RESET();
             }
             break;
