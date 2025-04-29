@@ -167,25 +167,33 @@ void serialize_can_msg(can_msg_t *msg) {
        |-------------+------------+--------+-------------------------------|
        | 0           | header     | 1      | always 0x02                   |
        |-------------+------------+--------+-------------------------------|
-       | 1[7..4]     | length     | 4 bit  | total length including header |
-       | 1[3]        | unused     | 1 bit  |                               |
-       | 1[2..0]     | sid[10..8] | 3 bit  |                               |
+       | 1[7:4]      | unused     | 4 bit  |                               |
+       | 1[3:0]      | length     | 4 bit  | total length including header |
        |-------------+------------+--------+-------------------------------|
-       | 2           | sid[7..0]  | 1      |                               |
-       | 3..length+2 | data       | length |                               |
-       | length+3    | checksum   | 1      | crc8 of all previous bytes    |
+       | 2[7:5]      | unused     | 3-bit  |                               |
+       | 2[4:0]      | sid[28:24] | 5-bit  |                               |
+       | 3           | sid[23:16] | 1      |                               |
+       | 4           | sid[15:8]  | 1      |                               |
+       | 5           | sid[7:0]   | 1      |                               |
        |-------------+------------+--------+-------------------------------|
+	   | 6..length-2 | data       | 0 to 8 |                               |
+       | length-1    | checksum   | 1      | crc8 of all previous bytes    |
+       |-------------+------------+--------+-------------------------------|
+	   length minimum 6 when 0 byte data, length maximum 14 when 8 byte data
    */
-    uint8_t buff[12] = {0};
-    uint8_t len = msg->data_len + 4;
-    if(len > 12) len = 12;
+    uint8_t buff[14] = {0};
+    uint8_t len = msg->data_len + 6;
+    if(len > 14) {len = 14;}
 
     // data
     buff[0] = 0x02;
-    buff[1] = (len << 4 & 0xf0) | (msg->sid >> 8 & 0x07);
-    buff[2] = msg->sid & 0xff;
-    for(uint8_t i = 0; i < len-4; i++) {
-        buff[i+3] = msg->data[i];
+    buff[1] = len;
+    buff[2] = (msg->sid >> 24) & 0xff;
+	buff[3] = (msg->sid >> 16) & 0xff;
+	buff[4] = (msg->sid >> 8) & 0xff;
+	buff[5] = msg->sid & 0xff;
+    for(uint8_t i = 0; i < len-6; i++) {
+        buff[i+6] = msg->data[i];
     }
     buff[len-1] = crc8_checksum(buff, len-1, 0);
 
