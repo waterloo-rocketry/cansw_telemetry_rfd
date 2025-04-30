@@ -179,11 +179,11 @@ void serialize_can_msg(can_msg_t *msg) {
 	   | 6..length-2 | data       | 0 to 8 |                               |
        | length-1    | checksum   | 1      | crc8 of all previous bytes    |
        |-------------+------------+--------+-------------------------------|
-	   length minimum 6 when 0 byte data, length maximum 14 when 8 byte data
+	   length minimum 7 when 0 byte data, length maximum 15 when 8 byte data
    */
-    uint8_t buff[14] = {0};
-    uint8_t len = msg->data_len + 6;
-    if(len > 14) {len = 14;}
+    uint8_t buff[15] = {0};
+    uint8_t len = msg->data_len + 7;
+    if(len > 15) {len = 15;}
 
     // data
     buff[0] = 0x02;
@@ -192,7 +192,7 @@ void serialize_can_msg(can_msg_t *msg) {
 	buff[3] = (msg->sid >> 16) & 0xff;
 	buff[4] = (msg->sid >> 8) & 0xff;
 	buff[5] = msg->sid & 0xff;
-    for(uint8_t i = 0; i < len-6; i++) {
+    for(uint8_t i = 0; i < len-7; i++) {
         buff[i+6] = msg->data[i];
     }
     buff[len-1] = crc8_checksum(buff, len-1, 0);
