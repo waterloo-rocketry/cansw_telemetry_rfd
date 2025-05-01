@@ -3,10 +3,13 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/home/rio/code/rocketry/cansw_telemetry/ltt_test/canlib/can_common.c</file>
-            <file>file:/home/rio/code/rocketry/cansw_telemetry/ltt_test/radio.c</file>
-            <file>file:/home/rio/code/rocketry/cansw_telemetry/ltt_test/main.c</file>
-            <file>file:/home/rio/code/rocketry/cansw_telemetry/ltt_test/adc.c</file>
+            <file>file:/home/jason/projects/rocketry/cansw_telemetry_rfd/ltt_test/adc.c</file>
+            <file>file:/home/jason/projects/rocketry/cansw_telemetry_rfd/ltt_test/uart.c</file>
+            <file>file:/home/jason/projects/rocketry/cansw_telemetry_rfd/ltt_test/main.c</file>
+            <file>file:/home/jason/projects/rocketry/cansw_telemetry_rfd/ltt_test/radio.c</file>
+            <file>file:/home/jason/projects/rocketry/cansw_telemetry_rfd/ltt_test/canlib/pic18f26k83/pic18f26k83_can.h</file>
+            <file>file:/home/jason/projects/rocketry/cansw_telemetry_rfd/ltt_test/canlib/util/safe_ring_buffer.c</file>
+            <file>file:/opt/microchip/xc8/v3.00/pic/sources/c99/common/sprcmul.c</file>
         </group>
     </open-files>
 </project-private>

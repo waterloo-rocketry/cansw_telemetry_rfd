@@ -52,7 +52,7 @@ typedef enum {
 
 void radio_handle_input_character(char c) {
     static can_msg_t msg;
-    static uint8_t msg_crc;
+    static uint8_t msg_crc = 0;
     static parse_state_t parse_state = WAITING;
     static uint8_t parse_i = 0;
 
@@ -63,6 +63,7 @@ void radio_handle_input_character(char c) {
                 msg.sid = 0;
                 msg.data_len = 0;
                 parse_state = SID;
+				msg_crc = 0;
                 parse_i = 0;
             }
             break;
@@ -75,20 +76,17 @@ void radio_handle_input_character(char c) {
                 break;
             }
 
-            msg.sid = (msg.sid << 4 | d) & 0x0fff;
+            msg.sid = (msg.sid << 4 | d) & 0x1fffffff;
 
             parse_i++;
 
-            if(parse_i == 1) {
-                // checksum for first sid byte
-                msg_crc = crc8_checksum(&d, 1, 0);
+            if((parse_i % 2) == 0) {
+                // passing uint32_t* as uint8_t* in little endian results in lowest byte only
+                msg_crc = crc8_checksum((uint8_t*) &msg.sid, 1, msg_crc);
             }
 
-            if(parse_i >= 3) { // sid has 3 hex digits
-                // checksum for second sid byte
-                // passing uint16_t* as uint8_t* in little endian results in lowest byte only
-                msg_crc = crc8_checksum((uint8_t*) &msg.sid, 1, msg_crc);
-                parse_state = DATA_SEP;
+            if(parse_i >= 8) { // sid has 8 hex digits
+			    parse_state = DATA_SEP;
             }
 
             break;
@@ -124,12 +122,8 @@ void radio_handle_input_character(char c) {
 
             if(++parse_i == 2) { // crc8 has 2 hex digits
                 if(exp_crc == msg_crc) {
-                    if(check_board_need_reset(&msg)){
-                        RESET();
-                    }
-                    txb_enqueue(&msg);
+				    txb_enqueue(&msg);
                 }
-
                 parse_state = WAITING;
             }
             break;
