@@ -19,7 +19,7 @@ void uart_init(void)
     ANSELB2 = 0;
     // set RX pin location
     U1RXPPS = (0b001 << 3) | // port B
-              (0b011);       // pin 3
+              (0b011);       // pin 30
     // set CTS pin location
     U1CTSPPS = (0b001 << 3) | // port B
                (0b010);       // pin 2

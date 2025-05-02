@@ -27,7 +27,7 @@ int main(void) {
     gpio_init();
 
     uart_init();
-
+    
     adc_init();
 
     // power on radio
@@ -72,8 +72,15 @@ int main(void) {
             last_millis = millis();
 
             // visual heartbeat indicator
-            BLUE_LED_SET(heartbeat);
+            BLUE_LED_SET(true);
+            RED_LED_SET(true);
             heartbeat = !heartbeat;
+            
+            // UART test
+            uint8_t test[] = "Hello World\r\n";
+            uart_transmit_buffer(test, sizeof(test) - 1);
+    
+
 
             // radio current checks
             can_msg_t msg;
@@ -102,6 +109,8 @@ int main(void) {
 
         //send any queued CAN messages
         txb_heartbeat();
+        
+        //printf();
     }
 }
 
