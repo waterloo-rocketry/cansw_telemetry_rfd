@@ -106,10 +106,30 @@ int main(void) {
     }
 }
 
-uint8_t high_fq_data_counter = 0;
+uint8_t canard_actuator_cntr = 0;
+uint8_t canard_encoder_cntr = 0;
 
 static void can_msg_handler(const can_msg_t *msg) {
-    uint16_t msg_type = get_message_type(msg);
+	int msg_type = get_message_type(msg);
+	
+	// filtering logic
+    if ((msg_type == MSG_ACTUATOR_CMD) && (get_actuator_id(msg) == ACTUATOR_CANARD_ANGLE)) { // Filter out Canard Actuator Command
+		canard_actuator_cntr++;
+		if((canard_actuator_cntr & 0x7f) != 0) { // send every 128 message
+			return;
+		}
+	} else if ((msg_type == MSG_SENSOR_ANALOG)) {
+		can_analog_sensor_id_t sensor_id;
+		uint16_t* data;
+		get_analog_data(msg, &sensor_id, &data);
+		if(sensor_id == SENSOR_CANARD_ENCODER_1){
+			canard_encoder_cntr++;
+			if((canard_encoder_cntr & 0x7f) != 0) { // send every 128 message
+				return;
+			}
+		}
+	}
+	
     rcvb_push_message(msg);
 
     // ignore messages that were sent from this board
