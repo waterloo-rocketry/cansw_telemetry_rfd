@@ -9,7 +9,6 @@
             <file>file:/home/jason/projects/rocketry/cansw_telemetry_rfd/ltt_test/radio.c</file>
             <file>file:/home/jason/projects/rocketry/cansw_telemetry_rfd/ltt_test/canlib/pic18f26k83/pic18f26k83_can.h</file>
             <file>file:/home/jason/projects/rocketry/cansw_telemetry_rfd/ltt_test/canlib/util/safe_ring_buffer.c</file>
-            <file>file:/opt/microchip/xc8/v3.00/pic/sources/c99/common/sprcmul.c</file>
         </group>
     </open-files>
 </project-private>

@@ -113,14 +113,9 @@ static void can_msg_handler(const can_msg_t *msg) {
     rcvb_push_message(msg);
 
     // ignore messages that were sent from this board
-    if (get_board_type_unique_id(msg) == BOARD_TYPE_UNIQUE_ID) {
+    if ((get_board_type_unique_id(msg) == BOARD_TYPE_UNIQUE_ID) && (get_board_inst_unique_id(msg) == BOARD_INST_UNIQUE_ID)) {
         return;
     }
-	if (get_board_inst_unique_id(msg) == BOARD_INST_UNIQUE_ID) {
-        return;
-    }
-
-    int dest_id = -1;
 
     switch (msg_type) {
         case MSG_ACTUATOR_CMD:
