@@ -52,7 +52,7 @@ typedef enum {
 
 void radio_handle_input_character(char c) {
     static can_msg_t msg;
-    static uint8_t msg_crc;
+    static uint8_t msg_crc = 0;
     static parse_state_t parse_state = WAITING;
     static uint8_t parse_i = 0;
 
@@ -63,6 +63,7 @@ void radio_handle_input_character(char c) {
                 msg.sid = 0;
                 msg.data_len = 0;
                 parse_state = SID;
+				msg_crc = 0;
                 parse_i = 0;
             }
             break;
@@ -75,20 +76,17 @@ void radio_handle_input_character(char c) {
                 break;
             }
 
-            msg.sid = (msg.sid << 4 | d) & 0x0fff;
+            msg.sid = (msg.sid << 4 | d) & 0x1fffffff;
 
             parse_i++;
 
-            if(parse_i == 1) {
-                // checksum for first sid byte
-                msg_crc = crc8_checksum(&d, 1, 0);
+            if((parse_i % 2) == 0) {
+                // passing uint32_t* as uint8_t* in little endian results in lowest byte only
+                msg_crc = crc8_checksum((uint8_t*) &msg.sid, 1, msg_crc);
             }
 
-            if(parse_i >= 3) { // sid has 3 hex digits
-                // checksum for second sid byte
-                // passing uint16_t* as uint8_t* in little endian results in lowest byte only
-                msg_crc = crc8_checksum((uint8_t*) &msg.sid, 1, msg_crc);
-                parse_state = DATA_SEP;
+            if(parse_i >= 8) { // sid has 8 hex digits
+			    parse_state = DATA_SEP;
             }
 
             break;
@@ -124,12 +122,8 @@ void radio_handle_input_character(char c) {
 
             if(++parse_i == 2) { // crc8 has 2 hex digits
                 if(exp_crc == msg_crc) {
-                    if (get_message_type(&msg) == MSG_RESET_CMD && get_reset_board_id(&msg) == 0) {
-                        RESET();
-                    }
-                    txb_enqueue(&msg);
+				    txb_enqueue(&msg);
                 }
-
                 parse_state = WAITING;
             }
             break;
@@ -167,25 +161,33 @@ void serialize_can_msg(can_msg_t *msg) {
        |-------------+------------+--------+-------------------------------|
        | 0           | header     | 1      | always 0x02                   |
        |-------------+------------+--------+-------------------------------|
-       | 1[7..4]     | length     | 4 bit  | total length including header |
-       | 1[3]        | unused     | 1 bit  |                               |
-       | 1[2..0]     | sid[10..8] | 3 bit  |                               |
+       | 1[7:4]      | unused     | 4 bit  |                               |
+       | 1[3:0]      | length     | 4 bit  | total length including header |
        |-------------+------------+--------+-------------------------------|
-       | 2           | sid[7..0]  | 1      |                               |
-       | 3..length+2 | data       | length |                               |
-       | length+3    | checksum   | 1      | crc8 of all previous bytes    |
+       | 2[7:5]      | unused     | 3-bit  |                               |
+       | 2[4:0]      | sid[28:24] | 5-bit  |                               |
+       | 3           | sid[23:16] | 1      |                               |
+       | 4           | sid[15:8]  | 1      |                               |
+       | 5           | sid[7:0]   | 1      |                               |
        |-------------+------------+--------+-------------------------------|
+	   | 6..length-2 | data       | 0 to 8 |                               |
+       | length-1    | checksum   | 1      | crc8 of all previous bytes    |
+       |-------------+------------+--------+-------------------------------|
+	   length minimum 7 when 0 byte data, length maximum 15 when 8 byte data
    */
-    uint8_t buff[12] = {0};
-    uint8_t len = msg->data_len + 4;
-    if(len > 12) len = 12;
+    uint8_t buff[15] = {0};
+    uint8_t len = msg->data_len + 7;
+    if(len > 15) {len = 15;}
 
     // data
     buff[0] = 0x02;
-    buff[1] = (len << 4 & 0xf0) | (msg->sid >> 8 & 0x07);
-    buff[2] = msg->sid & 0xff;
-    for(uint8_t i = 0; i < len-4; i++) {
-        buff[i+3] = msg->data[i];
+    buff[1] = len;
+    buff[2] = (msg->sid >> 24) & 0xff;
+	buff[3] = (msg->sid >> 16) & 0xff;
+	buff[4] = (msg->sid >> 8) & 0xff;
+	buff[5] = msg->sid & 0xff;
+    for(uint8_t i = 0; i < len-7; i++) {
+        buff[i+6] = msg->data[i];
     }
     buff[len-1] = crc8_checksum(buff, len-1, 0);
 

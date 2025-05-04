@@ -1,6 +1,7 @@
 #include <xc.h>
 #include "canlib.h"
 
+#include "timer.h"
 #include "device_config.h"
 #include "platform.h"
 #include "radio.h"
@@ -79,10 +80,10 @@ int main(void) {
             can_msg_t msg;
 
             uint16_t radio_curr = read_radio_curr_low_pass_ma();
-            build_analog_data_msg(millis(), SENSOR_RADIO_CURR, radio_curr, &msg);
+            build_analog_data_msg(PRIO_MEDIUM, millis(), SENSOR_MOTOR_CURR, radio_curr, &msg);
             txb_enqueue(&msg);
 
-            build_board_stat_msg(millis(), E_NOMINAL, NULL, 0, &msg);
+            build_general_board_status_msg(PRIO_MEDIUM, millis(), 0, 0, &msg);
             txb_enqueue(&msg);
         }
 
@@ -105,26 +106,44 @@ int main(void) {
     }
 }
 
-uint8_t high_fq_data_counter = 0;
+uint8_t canard_actuator_cntr = 0;
+uint8_t canard_encoder_cntr = 0;
 
 static void can_msg_handler(const can_msg_t *msg) {
-    uint16_t msg_type = get_message_type(msg);
+	int msg_type = get_message_type(msg);
+	
+	// filtering logic
+    if ((msg_type == MSG_ACTUATOR_CMD) && (get_actuator_id(msg) == ACTUATOR_CANARD_ANGLE)) { // Filter out Canard Actuator Command
+		canard_actuator_cntr++;
+		if((canard_actuator_cntr & 0x7f) != 0) { // send every 128 message
+			return;
+		}
+	} else if ((msg_type == MSG_SENSOR_ANALOG)) {
+		can_analog_sensor_id_t sensor_id;
+		uint16_t* data;
+		get_analog_data(msg, &sensor_id, &data);
+		if(sensor_id == SENSOR_CANARD_ENCODER_1){
+			canard_encoder_cntr++;
+			if((canard_encoder_cntr & 0x7f) != 0) { // send every 128 message
+				return;
+			}
+		}
+	}
+	
     rcvb_push_message(msg);
 
     // ignore messages that were sent from this board
-    if (get_board_unique_id(msg) == BOARD_UNIQUE_ID) {
+    if ((get_board_type_unique_id(msg) == BOARD_TYPE_UNIQUE_ID) && (get_board_inst_unique_id(msg) == BOARD_INST_UNIQUE_ID)) {
         return;
     }
 
-    int dest_id = -1;
-
     switch (msg_type) {
         case MSG_ACTUATOR_CMD:
-            if (get_actuator_id(msg) == ACTUATOR_RADIO) {
-                if (get_req_actuator_state(msg) == ACTUATOR_OFF) {
+            if (get_actuator_id(msg) == ACTUATOR_TELEMETRY) {
+                if (get_cmd_actuator_state(msg) == ACT_STATE_OFF) {
                     SET_RADIO_POWER(false);
                 }
-                else if (get_req_actuator_state(msg) == ACTUATOR_ON) {
+                else if (get_cmd_actuator_state(msg) == ACT_STATE_ON) {
                     SET_RADIO_POWER(true);
                 }
             }
@@ -143,8 +162,7 @@ static void can_msg_handler(const can_msg_t *msg) {
             break;
 
         case MSG_RESET_CMD:
-            dest_id = get_reset_board_id(msg);
-            if (dest_id == BOARD_UNIQUE_ID || dest_id == 0) {
+            if(check_board_need_reset(msg)){
                 RESET();
             }
             break;

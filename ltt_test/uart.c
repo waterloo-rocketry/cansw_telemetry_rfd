@@ -1,8 +1,8 @@
-#include <pic18f26k83.h>
+#include <xc.h>
 
 #include "uart.h"
 #include "canlib.h"
-#include "canlib/util/safe_ring_buffer.h"
+#include "util/safe_ring_buffer.h"
 
 // safe ring buffers for sending and receiving
 static srb_ctx_t rx_buffer;
@@ -72,12 +72,12 @@ void uart_transmit_buffer(uint8_t *tx, uint8_t len)
     {
         srb_push(&tx_buffer, tx);
         tx++;
-    }\
+    }
     // If the module isn't enabled, give it a byte to send and enable it
     if (PIE3bits.U1TXIE == 0)
     {
-        srb_pop(&tx_buffer, &tx);
-        U1TXB = tx;
+        srb_pop(&tx_buffer, tx);
+        U1TXB = *tx;
         U1CON0bits.TXEN = 1;
         // also enable the interrupt for when it's ready to send more data
         PIE3bits.U1TXIE = 1;
