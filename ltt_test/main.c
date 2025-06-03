@@ -26,32 +26,32 @@ int main(void) {
     // set up pins
     gpio_init();
 
-    uart_init();
+    uart_init(115200, 48000000UL, true);
     
-    adc_init();
+    //adc_init();
 
     // power on radio
-    SET_RADIO_POWER(1);
+    //SET_RADIO_POWER(1);
 
     // Enable global interrupts
     INTCON0bits.GIE = 1;
 
     // Set up CAN TX
-    TRISC0 = 0; // set as output
-    RC0PPS = 0x33; // make C1 transmit CAN TX (page 267)
+    //TRISC0 = 0; // set as output
+    //RC0PPS = 0x33; // make C1 transmit CAN TX (page 267)
 
     // Set up CAN RX
-    TRISC1 = 1; // set as input
-    ANSELC1 = 0; // not analog
-    CANRXPPS = 0x11; // make CAN read from C1 (page 264-265)
+    //TRISC1 = 1; // set as input
+    //ANSELC1 = 0; // not analog
+    //CANRXPPS = 0x11; // make CAN read from C1 (page 264-265)
 
     // set up CAN module
-    can_timing_t can_setup;
-    can_generate_timing_params(_XTAL_FREQ * 4, &can_setup);
-    can_init(&can_setup, can_msg_handler);
+    //can_timing_t can_setup;
+    //can_generate_timing_params(_XTAL_FREQ * 4, &can_setup);
+    //can_init(&can_setup, can_msg_handler);
     // set up CAN buffers
-    rcvb_init(rx_pool, sizeof (rx_pool));
-    txb_init(tx_pool, sizeof (tx_pool), can_send, can_send_rdy);
+    //rcvb_init(rx_pool, sizeof (rx_pool));
+    //txb_init(tx_pool, sizeof (tx_pool), can_send, can_send_rdy);
 
     // loop timer
     uint32_t last_millis = millis();
@@ -73,33 +73,33 @@ int main(void) {
 
             // visual heartbeat indicator
             BLUE_LED_SET(true);
-            RED_LED_SET(true);
+            RED_LED_SET(heartbeat);
             heartbeat = !heartbeat;
             
             // UART test
-            uint8_t test[] = "Hello World\r\n";
+            uint8_t test[] = "Hello World ";
             uart_transmit_buffer(test, sizeof(test) - 1);
     
 
 
             // radio current checks
-            can_msg_t msg;
+            //can_msg_t msg;
 
-            uint16_t radio_curr = read_radio_curr_low_pass_ma();
-            build_analog_data_msg(millis(), SENSOR_RADIO_CURR, radio_curr, &msg);
-            txb_enqueue(&msg);
+            //uint16_t radio_curr = read_radio_curr_low_pass_ma();
+            //build_analog_data_msg(millis(), SENSOR_RADIO_CURR, radio_curr, &msg);
+            //txb_enqueue(&msg);
 
-            build_board_stat_msg(millis(), E_NOMINAL, NULL, 0, &msg);
-            txb_enqueue(&msg);
+            //build_board_stat_msg(millis(), E_NOMINAL, NULL, 0, &msg);
+            //txb_enqueue(&msg);
         }
 
         if (millis() - last_sensor_millis > MAX_SENSOR_TIME_DIFF_ms) {
             update_sensor_low_pass();
         }
         
-        while (uart_byte_available()) {
-            radio_handle_input_character(uart_read_byte());
-        }
+        //while (uart_byte_available()) {
+          //  radio_handle_input_character(uart_read_byte());
+        //}
         
         if (!rcvb_is_empty()) {
             can_msg_t msg;
@@ -108,9 +108,8 @@ int main(void) {
         }
 
         //send any queued CAN messages
-        txb_heartbeat();
+        //txb_heartbeat();
         
-        //printf();
     }
 }
 

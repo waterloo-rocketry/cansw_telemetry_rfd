@@ -1,8 +1,11 @@
 #include <pic18f26k83.h>
+#include <stdbool.h>
+#include <stdint.h>
 
-#include "uart.h"
 #include "canlib.h"
 #include "canlib/util/safe_ring_buffer.h"
+//#include "common.h"
+#include "uart.h"
 
 // safe ring buffers for sending and receiving
 static srb_ctx_t rx_buffer;
@@ -11,30 +14,41 @@ static srb_ctx_t tx_buffer;
 // memory pools to use for those srbs. 100 is a completely arbitrary number
 uint8_t rx_buffer_pool[100], tx_buffer_pool[100];
 
-void uart_init(void)
-{
-    TRISB3 = 1;
-    TRISB2 = 1;
-    ANSELB3 = 0;
-    ANSELB2 = 0;
-    // set RX pin location
-    U1RXPPS = (0b001 << 3) | // port B
-              (0b011);       // pin 30
-    // set CTS pin location
-    U1CTSPPS = (0b001 << 3) | // port B
-               (0b010);       // pin 2
+w_status_t uart_init(uint32_t baud_rate, uint32_t fosc, bool enable_flow_control) {
+    
+    // Configure UART1 pins (same as old code)
+TRISB3 = 1; // RX input
+ANSELB3 = 0;
+U1RXPPS = 0x13; // RB3
 
-    TRISB4 = 0;
-    TRISB1 = 0;
-    // Set B4 to TX
-    RB4PPS = 0b010011; // UART1 TX
-    // Set B1 to RTS
-    RB1PPS = 0b010101; // UART1 RTS
+TRISB4 = 0; // TX output
+RB4PPS = 0x13; // UART1 TX = 0x13 (0b010011)
 
-    // enable flow control.
-    U1CON2bits.FLO = 0b10;
+TRISB2 = 1; // CTS
+ANSELB2 = 0;
+U1CTSPPS = 0x12; // RB2
+
+TRISB1 = 0; // RTS
+RB1PPS = 0x15; // UART1 RTS = 0x15 (0b010101)
+
+
+    // only 12 or 48 MHz for pic
+    if (fosc != 12000000UL && fosc != 48000000UL) {
+        return W_INVALID_PARAM;
+    }
+
+    // bool controlled flow control.
+    U1CON2bits.FLO = enable_flow_control ? 0b10 : 0b00;
+
     // low speed
     U1CON0bits.BRGS = 0;
+    uint32_t divisor = (U1CON0bits.BRGS == 1) ? 4 : 16;
+
+    // checks if baud rate param within range
+    if (baud_rate == 0 || baud_rate > (fosc / divisor)) {
+        return W_INVALID_PARAM;
+    }
+
     // don't autodetect baudrate
     U1CON0bits.ABDEN = 0;
     // normal mode (8 bit, no parity, no 9th bit)
@@ -47,9 +61,10 @@ void uart_init(void)
     // keep running on overflow, never stop receiving
     U1CON2bits.RUNOVF = 1;
 
-    // baud rate stuff, divide by 25 to get 115200 baud
-    U1BRGL = 25;
-    U1BRGH = 0;
+    // dynamic baud rate
+    uint16_t brg = (fosc / (divisor * baud_rate)) - 1;
+    U1BRGH = (brg >> 8) & 0xFF;
+    U1BRGL = brg & 0xFF;
 
     // we are go for UART
     U1CON1bits.ON = 1;
@@ -63,19 +78,18 @@ void uart_init(void)
     PIE3bits.U1RXIE = 1;
     // Do not enable transmit interrupt, that interrupt enable signals that
     // there is data to be sent, which at init time is not true
+
+    return W_SUCCESS;
 }
 
-void uart_transmit_buffer(uint8_t *tx, uint8_t len)
-{
+void uart_transmit_buffer(uint8_t *tx, uint8_t len) {
     // just call uart_transmit_byte with each byte they want us to send
-    while (len--)
-    {
+    while (len--) {
         srb_push(&tx_buffer, tx);
         tx++;
-    }\
+    }
     // If the module isn't enabled, give it a byte to send and enable it
-    if (PIE3bits.U1TXIE == 0)
-    {
+    if (PIE3bits.U1TXIE == 0) {
         srb_pop(&tx_buffer, &tx);
         U1TXB = tx;
         U1CON0bits.TXEN = 1;
@@ -84,32 +98,25 @@ void uart_transmit_buffer(uint8_t *tx, uint8_t len)
     }
 }
 
-bool uart_byte_available(void)
-{
+bool uart_byte_available(void) {
     return !srb_is_empty(&rx_buffer);
 }
 
-uint8_t uart_read_byte(void)
-{
+uint8_t uart_read_byte(void) {
     uint8_t rcv;
     srb_pop(&rx_buffer, &rcv);
     return rcv;
 }
 
-void uart_interrupt_handler(void)
-{
-    if (PIR3bits.U1TXIF)
-    {
+void uart_interrupt_handler(void) {
+    if (PIR3bits.U1TXIF) {
         // check if there are any bytes we still want to transmit
-        if (!srb_is_empty(&tx_buffer))
-        {
+        if (!srb_is_empty(&tx_buffer)) {
             // if so, transmit them
             uint8_t tx;
             srb_pop(&tx_buffer, &tx);
             U1TXB = tx;
-        }
-        else
-        {
+        } else {
             // If we have no data to send, disable this interrupt
             PIE3bits.U1TXIE = 0;
             // if not, disable the TX part of the uart module so that TXIF
@@ -118,21 +125,15 @@ void uart_interrupt_handler(void)
             U1CON0bits.TXEN = 0;
         }
         PIR3bits.U1TXIF = 0;
-    }
-    else if (PIR3bits.U1RXIF)
-    {
+    } else if (PIR3bits.U1RXIF) {
         // we received a byte, need to push into RX buffer and return
         uint8_t rcv = U1RXB;
         srb_push(&rx_buffer, &rcv);
         PIR3bits.U1RXIF = 0;
-    }
-    else if (PIR3bits.U1EIF)
-    {
+    } else if (PIR3bits.U1EIF) {
         // Some sort of error, ignore for now (TODO?)
         PIR3bits.U1EIF = 0;
-    }
-    else if (PIR3bits.U1IF)
-    {
+    } else if (PIR3bits.U1IF) {
         PIR3bits.U1IF = 0;
     }
 }

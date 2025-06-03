@@ -1,14 +1,47 @@
-#ifndef UART_H_
-#define	UART_H_
+#ifndef ROCKETLIB_UART_H
+#define ROCKETLIB_UART_H
 
-#include <stdint.h>
 #include <stdbool.h>
+#include <stdint.h>
+
+#ifndef ROCKETLIB_COMMON_H
+#define ROCKETLIB_COMMON_H
+
+#define ROCKETLIB_VERSION_MAJOR 2025
+#define ROCKETLIB_VERSION_MINOR 1
+
+typedef enum {
+    W_SUCCESS = 0,
+    W_FAILURE,
+    W_INVALID_PARAM,
+    W_IO_ERROR,
+    W_IO_TIMEOUT,
+    W_MATH_ERROR,
+    W_OVERFLOW
+} w_status_t;
+
+void w_assert_fail(const char *file, int line, const char *statement);
+
+#ifdef W_DEBUG
+
+#define w_assert(statement)                                                                        \
+    if (!(statement)) {                                                                            \
+        w_assert_fail(__FILE__, __LINE__, #statement);                                             \
+    }
+
+#else
+
+#define w_assert(statement)
+
+#endif
+
+#endif
 
 /*
  * Initialize UART module. Set up rx and tx buffers, set up module,
  * and enable the requisite interrupts
  */
-void uart_init(void);
+w_status_t uart_init(uint32_t baud_rate, uint32_t fosc, bool enable_flow_control);
 
 /*
  * A lot like transmitting a single byte, except there are multiple bytes. tx does
@@ -37,5 +70,6 @@ uint8_t uart_read_byte(void);
  */
 void uart_interrupt_handler(void);
 
-#endif	/* UART_H */
+#endif /* ROCKETLIB_UART_H */
 
+    
