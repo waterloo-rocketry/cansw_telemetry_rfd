@@ -15,21 +15,21 @@ static srb_ctx_t tx_buffer;
 uint8_t rx_buffer_pool[100], tx_buffer_pool[100];
 
 w_status_t uart_init(uint32_t baud_rate, uint32_t fosc, bool enable_flow_control) {
-    
+
     // Configure UART1 pins (same as old code)
-TRISB3 = 1; // RX input
-ANSELB3 = 0;
-U1RXPPS = 0x13; // RB3
+    TRISB3 = 1; // RX input
+    ANSELB3 = 0;
+    U1RXPPS = 0x13; // RB3
 
-TRISB4 = 0; // TX output
-RB4PPS = 0x13; // UART1 TX = 0x13 (0b010011)
+    TRISB4 = 0; // TX output
+    RB4PPS = 0x13; // UART1 TX = 0x13 (0b010011)
 
-TRISB2 = 1; // CTS
-ANSELB2 = 0;
-U1CTSPPS = 0x12; // RB2
+    TRISB2 = 1; // CTS
+    ANSELB2 = 0;
+    U1CTSPPS = 0x12; // RB2
 
-TRISB1 = 0; // RTS
-RB1PPS = 0x15; // UART1 RTS = 0x15 (0b010101)
+    TRISB1 = 0; // RTS
+    RB1PPS = 0x15; // UART1 RTS = 0x15 (0b010101)
 
 
     // only 12 or 48 MHz for pic
@@ -70,8 +70,8 @@ RB1PPS = 0x15; // UART1 RTS = 0x15 (0b010101)
     U1CON1bits.ON = 1;
 
     // initialize the rx and tx buffers
-    srb_init(&rx_buffer, rx_buffer_pool, sizeof(rx_buffer_pool), sizeof(uint8_t));
-    srb_init(&tx_buffer, tx_buffer_pool, sizeof(tx_buffer_pool), sizeof(uint8_t));
+    srb_init(&rx_buffer, rx_buffer_pool, sizeof (rx_buffer_pool), sizeof (uint8_t));
+    srb_init(&tx_buffer, tx_buffer_pool, sizeof (tx_buffer_pool), sizeof (uint8_t));
 
     // enable receive interrupt
     IPR3bits.U1RXIP = 1;

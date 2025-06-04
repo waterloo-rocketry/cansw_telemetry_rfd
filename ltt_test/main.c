@@ -27,7 +27,7 @@ int main(void) {
     gpio_init();
 
     uart_init(115200, 48000000UL, true);
-    
+
     //adc_init();
 
     // power on radio
@@ -62,11 +62,11 @@ int main(void) {
     while (1) {
         // clear watchdog timer
         CLRWDT();
-        
+
         if (OSCCON2 != 0x70) { // If the fail-safe clock monitor has triggered
             oscillator_init();
         }
-        
+
         if (millis() - last_millis > MAX_LOOP_TIME_DIFF_ms) {
             // update our loop counter
             last_millis = millis();
@@ -75,11 +75,11 @@ int main(void) {
             BLUE_LED_SET(true);
             RED_LED_SET(heartbeat);
             heartbeat = !heartbeat;
-            
+
             // UART test
             uint8_t test[] = "Hello World ";
-            uart_transmit_buffer(test, sizeof(test) - 1);
-    
+            uart_transmit_buffer(test, sizeof (test) - 1);
+
 
 
             // radio current checks
@@ -96,11 +96,11 @@ int main(void) {
         if (millis() - last_sensor_millis > MAX_SENSOR_TIME_DIFF_ms) {
             update_sensor_low_pass();
         }
-        
+
         //while (uart_byte_available()) {
-          //  radio_handle_input_character(uart_read_byte());
+        //  radio_handle_input_character(uart_read_byte());
         //}
-        
+
         if (!rcvb_is_empty()) {
             can_msg_t msg;
             rcvb_pop_message(&msg);
@@ -109,7 +109,7 @@ int main(void) {
 
         //send any queued CAN messages
         //txb_heartbeat();
-        
+
     }
 }
 
@@ -131,8 +131,7 @@ static void can_msg_handler(const can_msg_t *msg) {
             if (get_actuator_id(msg) == ACTUATOR_RADIO) {
                 if (get_req_actuator_state(msg) == ACTUATOR_OFF) {
                     SET_RADIO_POWER(false);
-                }
-                else if (get_req_actuator_state(msg) == ACTUATOR_ON) {
+                } else if (get_req_actuator_state(msg) == ACTUATOR_ON) {
                     SET_RADIO_POWER(true);
                 }
             }

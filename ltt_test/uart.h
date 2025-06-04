@@ -72,4 +72,3 @@ void uart_interrupt_handler(void);
 
 #endif /* ROCKETLIB_UART_H */
 
-    
