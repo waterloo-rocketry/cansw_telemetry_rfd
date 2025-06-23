@@ -10,24 +10,26 @@
 #define ROCKETLIB_VERSION_MAJOR 2025
 #define ROCKETLIB_VERSION_MINOR 1
 
+// common.h integration
+
 typedef enum {
-    W_SUCCESS = 0,
-    W_FAILURE,
-    W_INVALID_PARAM,
-    W_IO_ERROR,
-    W_IO_TIMEOUT,
-    W_MATH_ERROR,
-    W_OVERFLOW
+  W_SUCCESS = 0,
+  W_FAILURE,
+  W_INVALID_PARAM,
+  W_IO_ERROR,
+  W_IO_TIMEOUT,
+  W_MATH_ERROR,
+  W_OVERFLOW
 } w_status_t;
 
 void w_assert_fail(const char *file, int line, const char *statement);
 
 #ifdef W_DEBUG
 
-#define w_assert(statement)                                                                        \
-    if (!(statement)) {                                                                            \
-        w_assert_fail(__FILE__, __LINE__, #statement);                                             \
-    }
+#define w_assert(statement)                                                    \
+  if (!(statement)) {                                                          \
+    w_assert_fail(__FILE__, __LINE__, #statement);                             \
+  }
 
 #else
 
@@ -36,39 +38,41 @@ void w_assert_fail(const char *file, int line, const char *statement);
 #endif
 
 #endif
+// uart.h integration
 
 /*
- * Initialize UART module. Set up rx and tx buffers, set up module,
- * and enable the requisite interrupts
- */
-w_status_t uart_init(uint32_t baud_rate, uint32_t fosc, bool enable_flow_control);
-
-/*
- * A lot like transmitting a single byte, except there are multiple bytes. tx does
- * not need to be null terminated, that's why we have the len parameter
+ * Initializes the UART1 module.
  *
- * tx: pointer to an array of bytes to send
- * len: the number of bytes that should be sent from that array
+ * baud_rate: Desired baud rate (e.g., 9600, 115200)
+ * fosc: Clock frequency (must be 12 MHz or 48 MHz)
+ * enable_flow_control: true to enable RTS flow control, false to disable
+ *
+ * Returns: W_SUCCESS if setup is successful, otherwise W_INVALID_PARAM
  */
-void uart_transmit_buffer(uint8_t *tx, uint8_t len);
+w_status_t uart_init(uint32_t baud_rate, uint32_t fosc,
+                     bool enable_flow_control);
 
 /*
- * returns true if there's a byte waiting to be read from the UART module
+ * Transmits a single byte over UART (blocking).
+ *
+ * waits until the transmit buffer is empty, then sends the byte.
  */
-bool uart_byte_available(void);
+void uart_transmit_byte(uint8_t byte);
 
 /*
- * pops a byte from the receive buffer and returns it. Don't call this
- * function unless uart_byte_available is returning true. Don't call this
- * function from an interrupt context.
- */
-uint8_t uart_read_byte(void);
-
-/*
- * handler for all UART1 module interrputs. That is, PIR3:U1IF, U1EIF, U1TXIF, and U1RXIF
- * this function clears the bits in PIR3 that it handles.
+ * Interrupt handler for UART1.
+ *
+ * Handles RX and optional TX,
+ * and calls user-defined uart_rx_callback() on received bytes.
  */
 void uart_interrupt_handler(void);
 
-#endif /* ROCKETLIB_UART_H */
+/*
+ * Internal callback function called when a byte is received via UART1.
+ *
+ * This is implemented in uart.c and currently echoes the received byte back.
+ * It is not intended to be overridden by user code due to MPLAB limitations.
+ */
+void uart_rx_callback(uint8_t byte);
 
+#endif /* ROCKETLIB_UART_H */
