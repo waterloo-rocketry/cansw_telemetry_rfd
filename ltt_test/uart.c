@@ -2,8 +2,8 @@
 #include <stdint.h>
 #include <xc.h>
 
-// #include "common.h" integrated in uart.h for testing
 #include "uart.h"
+// #include "common.h" integrated in uart.h for testing
 
 void uart_rx_callback(uint8_t byte) {
   uart_transmit_byte(byte); // echos back recieved byte
