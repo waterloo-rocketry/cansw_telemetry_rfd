@@ -80,7 +80,7 @@ int main(void) {
             can_msg_t msg;
 
             uint16_t radio_curr = read_radio_curr_low_pass_ma();
-            build_analog_data_msg(PRIO_MEDIUM, millis(), SENSOR_MOTOR_CURR, radio_curr, &msg);
+            build_analog_data_msg(PRIO_MEDIUM, millis(), SENSOR_RADIO_CURR, radio_curr, &msg);
             txb_enqueue(&msg);
 
             build_general_board_status_msg(PRIO_MEDIUM, millis(), 0, 0, &msg);
