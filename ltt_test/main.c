@@ -108,14 +108,16 @@ int main(void) {
 
 uint8_t canard_actuator_cntr = 0;
 uint8_t canard_encoder_cntr = 0;
+uint16_t canard_imu_cntr = 0;
+uint16_t canard_state_est_cntr = 0;
 
 static void can_msg_handler(const can_msg_t *msg) {
 	int msg_type = get_message_type(msg);
-	
+
 	// filtering logic
     if ((msg_type == MSG_ACTUATOR_CMD) && (get_actuator_id(msg) == ACTUATOR_CANARD_ANGLE)) { // Filter out Canard Actuator Command
 		canard_actuator_cntr++;
-		if((canard_actuator_cntr & 0x7f) != 0) { // send every 128 message
+		if((canard_actuator_cntr & 0x3f) != 0) { // send every 64 message
 			return;
 		}
 	} else if ((msg_type == MSG_SENSOR_ANALOG)) {
@@ -124,12 +126,22 @@ static void can_msg_handler(const can_msg_t *msg) {
 		get_analog_data(msg, &sensor_id, &data);
 		if(sensor_id == SENSOR_CANARD_ENCODER_1){
 			canard_encoder_cntr++;
-			if((canard_encoder_cntr & 0x7f) != 0) { // send every 128 message
+			if((canard_encoder_cntr & 0x3f) != 0) { // send every 64 message
 				return;
 			}
 		}
+	} else if ((msg_type >= MSG_SENSOR_IMU_X) && (msg_type <= MSG_SENSOR_BARO)) {
+		canard_imu_cntr++;
+		if((canard_imu_cntr & 0x3e0) != 0) { // for every 1024 messages, send 32 messages
+			return;
+		}
+	} else if ((msg_type == MSG_STATE_EST_DATA)) {
+		canard_state_est_cntr++;
+		if((canard_state_est_cntr & 0x3e0) != 0) { // for every 1024 messages, send 32 messages
+			return;
+		}
 	}
-	
+
     rcvb_push_message(msg);
 
     // ignore messages that were sent from this board
