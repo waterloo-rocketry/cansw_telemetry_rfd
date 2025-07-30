@@ -110,6 +110,9 @@ uint8_t canard_actuator_cntr = 0;
 uint8_t canard_encoder_cntr = 0;
 uint16_t canard_imu_cntr = 0;
 uint16_t canard_state_est_cntr = 0;
+uint8_t inj_sensor_ox_pres_cntr = 0;
+uint8_t inj_sensor_fuel_pres_cntr = 0;
+uint8_t inj_sensor_cc_pres_cntr = 0;
 
 static void can_msg_handler(const can_msg_t *msg) {
 	int msg_type = get_message_type(msg);
@@ -127,6 +130,21 @@ static void can_msg_handler(const can_msg_t *msg) {
 		if(sensor_id == SENSOR_CANARD_ENCODER_1){
 			canard_encoder_cntr++;
 			if((canard_encoder_cntr & 0x3f) != 0) { // send every 64 message
+				return;
+			}
+		}else if(sensor_id == SENSOR_PRESSURE_OX){
+			inj_sensor_ox_pres_cntr++;
+			if((inj_sensor_ox_pres_cntr & 0xf) != 0) { // send every 16 message
+				return;
+			}
+		}else if(sensor_id == SENSOR_PRESSURE_FUEL){
+			inj_sensor_fuel_pres_cntr++;
+			if((inj_sensor_fuel_pres_cntr & 0xf) != 0) { // send every 16 message
+				return;
+			}
+		}else if(sensor_id == SENSOR_PRESSURE_CC0){
+			inj_sensor_cc_pres_cntr++;
+			if((inj_sensor_cc_pres_cntr & 0xf) != 0) { // send every 16 message
 				return;
 			}
 		}
