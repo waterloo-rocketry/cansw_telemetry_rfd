@@ -122,7 +122,7 @@
         <property key="default-bitfield-type" value="true"/>
         <property key="default-char-type" value="true"/>
         <property key="define-macros"
-                  value="BOARD_TYPE_UNIQUE_ID=BOARD_TYPE_ID_TELEMETRY;BOARD_INST_UNIQUE_ID=BOARD_INST_ID_GENERIC"/>
+                  value="BOARD_TYPE_UNIQUE_ID=BOARD_TYPE_ID_TELEMETRY;BOARD_INST_UNIQUE_ID=BOARD_INST_ID_ROCKET"/>
         <property key="disable-optimizations" value="true"/>
         <property key="extra-include-directories" value="canlib;rocketlib/include"/>
         <property key="favor-optimization-for" value="-speed,+space"/>
